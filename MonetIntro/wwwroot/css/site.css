@@ -172,3 +172,8 @@ app {
 .sql.card .card-header {
     font-weight: bold;
 }
+
+pre.base64 {
+    white-space: pre-line;
+    word-break: break-all;
+}

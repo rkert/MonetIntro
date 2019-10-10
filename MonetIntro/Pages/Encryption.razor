@@ -1,9 +1,67 @@
 ﻿@page  "/encryption"
 
+@using MonetIntro.Data
+
+@inject CryptographyManagerService Crypto
+
 <h3>Šifrování</h3>
 
 <p>Tato stránka předpokládá, že již máte nainstalován certifikát z přílohy mailu.</p>
 
-@code {
+<br />
+Soubor k zašifrování: <InputFile OnChange="HandleFileSelected" />
+<br />
+<br />
+<button @onclick="Upload">Zašifrovat a podepsat</button>
+<br />
+<br />
+<b>@processState</b>
 
+@if (resultingData != null)
+{
+    <br />
+    <br />
+    <a href="data:application/octet-stream;base64,@resultingData" download="@resultingFileName">Stáhnout...</a>
+    <br />
+    <br />
+    <pre class="base64">@resultingData</pre>
+}
+
+@code {
+    private IFileListEntry[] selectedFiles;
+
+    private string processState = "Nečinný";
+
+    private string resultingData;
+
+    private string resultingFileName;
+
+    void HandleFileSelected(IFileListEntry[] files)
+    {
+        selectedFiles = files;
+    }
+
+    async Task Upload()
+    {
+        processState = "Zpracovávání...";
+
+        try
+        {
+            var file = selectedFiles.FirstOrDefault();
+
+            if (file == null) return;
+
+            var result = await Crypto.Handle(file.Data);
+
+            resultingData = Convert.ToBase64String(result);
+            resultingFileName = $"{file.Name}.enc";
+
+            processState = "Dokončeno.";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            processState = "Zpracovávání selhalo.";
+        }
+    }
 }
