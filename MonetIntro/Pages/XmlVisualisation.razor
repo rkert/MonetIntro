@@ -1,0 +1,12 @@
+﻿@page "/xml/show/{XmlName}"
+
+@using MonetIntro.Data
+@using  MonetIntro.Components
+
+<h1>@XmlName</h1>
+
+<CustomXmlVisualisation XmlName="@XmlName"/>
+
+@code {
+    [Parameter] public string XmlName { get; set; }
+}

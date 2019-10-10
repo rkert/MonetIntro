@@ -1,0 +1,67 @@
+﻿@page "/xml/overview"
+
+@using MonetIntro.Data
+@using MonetIntro.Components
+@using MonetIntro.Exceptions
+@inject XmlManagerService XmlMan
+
+<h3>Přehled XML</h3>
+
+<AvailableXmlsList @ref="list"/>
+
+<br />
+<h4>Nahrávání nových XML</h4>
+<br />
+<InputFile @ref="fileInput" multiple OnChange="HandleFileSelected" />
+<br />
+<br />
+<button @onclick="Upload">Nahrát</button>
+<br />
+<br />
+<b>@uploadState</b>
+
+@code {
+    private AvailableXmlsList list;
+
+    private InputFile fileInput;
+
+    private IFileListEntry[] selectedFiles;
+
+    private string uploadState = "Nečinný";
+
+    void HandleFileSelected(IFileListEntry[] files)
+    {
+        selectedFiles = files;
+    }
+
+    async Task Upload()
+    {
+        uploadState = "Nahrávání...";
+
+        try
+        {
+            foreach (var file in selectedFiles)
+            {
+                try
+                {
+                    await XmlMan.AddXml(file.Name, file.Data);
+                }
+                catch (FileUploadException e)
+                {
+                    uploadState = $"Nahrávání souboru {file.Name} selhalo: {e.Message}.";
+
+                    continue;
+                }
+
+                uploadState = $"Nahrávání souboru {file.Name} dokončeno.";
+
+                list.RedrawList();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            uploadState = "Nahrávání selhalo.";
+        }
+    }
+}

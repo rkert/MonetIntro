@@ -1,0 +1,20 @@
+﻿@using MonetIntro.Data
+
+@inject XmlManagerService XmlMan
+
+<ul >
+    @foreach (var item in XmlMan.GetAvailableXmls())
+    {
+        <li>
+            <NavLink href="@("/xml/show/" + item)">@item</NavLink>
+        </li>
+    }
+</ul>
+
+@code {
+
+    public void RedrawList()
+    {
+        StateHasChanged();
+    }
+}

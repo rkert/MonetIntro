@@ -1,0 +1,45 @@
+﻿@using MonetIntro.Data
+
+@inject XmlManagerService XmlMan
+
+<div>Číslo dávky: <code>@Data.Header.BatchNumber</code></div>
+<div>Verze exportu: <b>@Data.Header.ExportVersion</b></div>
+<div>Validní: <b>@(Data.Header.ErrorCode == 0 ? "ano" : "ne")</b></div>
+
+<br/>
+
+<div class="card-deck">
+    @foreach (var item in Data.Items?.Items)
+    {
+        <div class="card xmlvis">
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="background-image: url('@("data:image/png;base64, " + item.CardHolderPhoto)')" alt="" class="card-img-top" />
+            <div class="card-body">
+                <h5 class="card-title">@item.Firstname @item.Surname</h5>
+                <p class="card-text">
+                    <div>@item.HomeAddress</div>
+                    <hr/>
+                    <div>Typ karty: #@item.CardTypeId</div>
+                    <div>Číslo karty: <code>@item.CardNumber</code></div>
+                    <div>Klíč karty: <code>@item.CardSecret</code></div>
+                </p>
+            </div>
+            <div class="card-footer text-muted">
+                <div>Vydáno: @item.IssueDate</div>
+                <div>Expiruje: @item.ExpiryDate</div>
+            </div>
+        </div>
+    }
+</div>
+
+<div>Celkový počet záznamů: @Data.Header.ItemsCount</div>
+
+@code {
+    [Parameter] public string XmlName { get; set; }
+
+    private XmlCardExport Data { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Data = XmlMan.GetXmlByName(XmlName);
+    }
+}

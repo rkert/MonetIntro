@@ -1,0 +1,46 @@
+﻿@page "/sql"
+
+<h3>SQL dotazy</h3>
+
+<p>V případě, že mám zde nějakou nepřesnost, rád opravím.</p>
+
+
+@foreach (var (question, answer) in questions)
+{
+    <div class="card sql">
+        <div class="card-header">
+            @question
+        </div>
+        <div class="card-body">
+            <code>@answer</code>
+        </div>
+    </div>
+}
+
+@code {
+
+    private Dictionary<string, string> questions = new Dictionary<string, string>
+    {
+        {
+            "Vyberte všechny karty z tabulky Card, které jsou v dávce s BatchID = 10",
+            "SELECT Card.* FROM Card INNER JOIN CardBatch as Batch ON Card.CardID=Batch.CardId WHERE Batch.BatchID = 10;"
+        },
+        {
+            "Vyberte všechny karty z tabulky Card pro BatchID = 10, které mají uveden Result a jsou typu CardTypeID = 1",
+            "SELECT Card.* FROM Card INNER JOIN CardBatch as Batch ON Card.CardID=Batch.CardId WHERE Batch.BatchID = 10 AND Batch.Result IS NOT NULL AND CardTypeID = 1;"
+        },
+        {
+            "Vyberte všechny dávky, ke každému záznamu, počet karet v dávkce, které jsou aktuální (Actual = true)",
+            "SELECT BatchID, COUNT(CardID) AS CardCount FROM CardBatch WHERE Actual = true GROUP BY BatchID"
+        },
+        {
+            "Předchozí výběr seskupte  podle typu karty",
+            "SELECT CardTypeID, COUNT(CardID) AS CardCount FROM Card WHERE (SELECT COUNT(*) FROM CardBatch WHERE CardID = CardID AND Actual = true) > 0 GROUP BY CardTypeID"
+        },
+        {
+            "Smažte záznam z tabulky Card s CardID = 100",
+            "DELETE FROM Card WHERE CardID = 100"
+        }
+    };
+
+}
